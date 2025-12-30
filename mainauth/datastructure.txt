@@ -1,0 +1,26 @@
+mainsys/
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── config.py
+│   ├── database.py
+│   ├── models.py
+│   ├── schemas.py
+│   ├── auth/
+│   │   ├── __init__.py
+│   │   ├── keycloak.py
+│   │   └── dependencies.py
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── users.py
+│   │   └── subsystems.py
+│   └── crud/
+│       ├── __init__.py
+│       ├── users.py
+│       └── subsystems.py
+├── run.py
+├── requirements.txt
+├── .env
+├── .gitignore
+└── README.md

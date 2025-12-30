@@ -1,0 +1,87 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont;
+
+    /* 背景重點在這裡 */
+    background: linear-gradient(
+        135deg,
+        #1e3a8a,
+        #2563eb,
+        #38bdf8
+    );
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 登入卡片 */
+.login-container {
+    width: 340px;
+    padding: 28px 30px;
+
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(6px);
+
+    border-radius: 12px;
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.25),
+        0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.login-container h2 {
+    margin-bottom: 22px;
+    text-align: center;
+    color: #1e293b;
+}
+
+/* 輸入框 */
+.login-container input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 16px;
+
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+}
+
+.login-container input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* 登入按鈕 */
+.login-container button {
+    width: 100%;
+    padding: 12px;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    border: none;
+    border-radius: 6px;
+
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+
+    cursor: pointer;
+}
+
+.login-container button:hover {
+    filter: brightness(1.05);
+}
+
+/* 錯誤訊息 */
+.error {
+    margin-top: 14px;
+    color: #dc2626;
+    font-size: 14px;
+    text-align: center;
+}
