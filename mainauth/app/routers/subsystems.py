@@ -1,18 +1,36 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import Header, APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from httpx import request
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models import SubSystem
+from app.models import AuthorizationCode, SubSystem, User, SessionToken
+from app.auth.keycloak import get_user_info, exchange_token_for_subsystem
 from app.schemas import SubSystemCreate, SubSystemInDB
 from typing import List
+from datetime import datetime, timedelta, timezone
+import secrets
+from logging import getLogger
 
-
+security = HTTPBearer()
 router = APIRouter()
+logger = getLogger(__name__)
+# 加上這行測試
+logger.info("========== subsystems.py 載入了 ==========")
 
 @router.get("/")
-def get_subsystems(db: Session = Depends(get_db)):
+async def get_subsystems(db: Session = Depends(get_db)):
     """取得子系統列表"""
-    subsystems = db.query(SubSystem).filter(SubSystem.is_active == True).all()
-    return subsystems
+    try:
+        # 取得所有啟用的子系統
+        subsystems = db.query(SubSystem).filter(SubSystem.is_active == True).all()
+        return subsystems
+        
+    except Exception as e:
+        logger.error(f"無效的認證 token: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error"
+        )
 
 @router.post("/", response_model=SubSystemInDB)
 def create_subsystem(subsystem: SubSystemCreate, db: Session = Depends(get_db)):
@@ -31,7 +49,6 @@ def create_subsystem(subsystem: SubSystemCreate, db: Session = Depends(get_db)):
         url=subsystem.url,
         icon=subsystem.icon,
         keycloak_client_id=subsystem.keycloak_client_id,
-        keycloak_client_secret=subsystem.keycloak_client_secret,
         is_active=subsystem.is_active,
         order=subsystem.order
     )
@@ -51,13 +68,8 @@ def get_subsystem(subsystem_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="子系統不存在")
     return subsystem
 
-
 @router.put("/{subsystem_id}", response_model=SubSystemInDB)
-def update_subsystem(
-    subsystem_id: int, 
-    subsystem_update: SubSystemCreate, 
-    db: Session = Depends(get_db)
-):
+def update_subsystem(subsystem_id: int, subsystem_update: SubSystemCreate, db: Session = Depends(get_db)):
     """更新子系統"""
     subsystem = db.query(SubSystem).filter(SubSystem.id == subsystem_id).first()
     if not subsystem:

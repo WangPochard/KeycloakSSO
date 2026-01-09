@@ -169,6 +169,7 @@
 
         // 檢查登入狀態
         function checkLoginStatus() {
+            // const token = localStorage.getItem('access_token');
             const token = localStorage.getItem('access_token');
             const user = localStorage.getItem('user');
 
@@ -198,10 +199,20 @@
             grid.innerHTML = '';
 
             try {
+                // const token = localStorage.getItem('access_token');
                 const token = localStorage.getItem('access_token');
+                
+                if (!token) {
+                    showError('未登入,請先登入');
+                    window.location.href = '/login';
+                    return;
+                }
+
                 const response = await fetch(`${API_BASE_URL}/api/subsystems/`, {
+                    method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 });
 
@@ -244,18 +255,68 @@
 
         // 導向子系統
         function navigateToSubsystem(system) {
+            const user = JSON.parse(localStorage.getItem('user'));
             const token = localStorage.getItem('access_token');
+            if (!token) {
+                showError('未登入,請先登入');
+                window.location.href = '/login';
+                return;
+            }
+
+            // const sso_result = "";
             
-            // 將 token 透過 URL 參數傳給子系統
-            const url = `${system.url}?sso_token=${encodeURIComponent(token)}`;
+            // fetch(`${API_BASE_URL}/api/subsystems/token-exchange`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Authorization': `Bearer ${token}`,
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify({ access_token: token, service_name: system.name })
+            // }).then(response => {
+            //     if (!response.ok) {
+            //         throw new Error('無法取得SSO金鑰');
+            //     }
+            //     return response.json();
+            // }).then(data => {
+            //     sso_token = data.sso_token;
+            //     // 直接構建帶 code 的 URL，讓後端去處理
             
-            // 在新分頁開啟子系統
-            window.open(url, '_blank');
+                
+            // });
+
+            fetch(`${API_BASE_URL}/api/auth/code/${system.id}/${user.id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('無法取得授權碼');
+                    }
+                    return response.json();
+            }).then(data => {
+                console.log('取得授權碼:', data);
+                
+                // 用授權碼開啟子系統
+                const subsystemUrl = `${data.subsystem_url}?token=${data.token}`;
+                window.open(subsystemUrl, '_blank');
+            })
+            .catch(error => {
+                console.error('錯誤:', error);
+                showError('無法開啟子系統：' + error.message);
+            });
         }
 
         // 登出
         async function logout() {
+            // const token = localStorage.getItem('access_token');
             const token = localStorage.getItem('access_token');
+            if (!token) {
+                showError('未登入,請先登入');
+                window.location.href = '/login';
+                return;
+            }
             
             try {
                 // 呼叫後端登出 API（可選）
@@ -271,8 +332,9 @@
             }
             
             // 清除本地儲存
+            // localStorage.removeItem('access_token');
+            // localStorage.removeItem('refresh_token');
             localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
             localStorage.removeItem('user');
             
             // 導回登入頁

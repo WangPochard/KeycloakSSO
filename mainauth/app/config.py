@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     KEYCLOAK_URL: str
     KEYCLOAK_REALM: str
     KEYCLOAK_CLIENT_ID: str
-    KEYCLOAK_CLIENT_SECRET: str = "yUYsQGXAvmIZpAfOjP1pvWNhPVFXlG3h"
+    KEYCLOAK_CLIENT_SECRET: str = "CuxacZm7gM4D4SYxhafhgvyqilKl4tyQ"
     KEYCLOAK_ADMIN_USERNAME: str 
     KEYCLOAK_ADMIN_PASSWORD: str 
     

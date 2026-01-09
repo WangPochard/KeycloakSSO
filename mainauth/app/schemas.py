@@ -88,5 +88,13 @@ class LoginResponse(BaseModel):
     access_token: str
     user: UserInDB
 
+class ServiceVerifyRequest(BaseModel):
+    """
+    access_token: 由主系統帶去子系統的一次性隨機碼
+    service_name: 子系統名稱
+    """
+    access_token: str
+    service_name: str
+
 class TokenVerifyRequest(BaseModel):
     token: str

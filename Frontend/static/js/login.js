@@ -32,19 +32,19 @@ async function login() {
             console.error(data.detail);
             return;
         }
-
-        console.log('login success:', data);
-
-        // 新增：儲存 token 到 localStorage
-        localStorage.setItem('access_token', data.access_token);
-        if (data.refresh_token) {
-            localStorage.setItem('refresh_token', data.refresh_token);
-        }
+        // // 新增：儲存 token 到 localStorage
+        // localStorage.setItem('access_token', data.access_token);
+        // if (data.refresh_token) {
+        //     localStorage.setItem('refresh_token', data.refresh_token);
+        // }
+        localStorage.setItem('access_token', data.session_token);
         
         // 新增：儲存使用者資訊
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        alert('登入成功');
+        console.log('login success:', data);
+
+        // alert('登入成功');
         
         // 跳轉到儀表板
         window.location.href = '/sso-login.html';
